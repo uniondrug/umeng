@@ -1,9 +1,11 @@
 {
     "name" : "uniondrug/umeng",
     "description" : "友盟推送",
+    "license" : "MIT",
+    "type" : "library",
     "authors" : [
         {
-            "name" : "Uniondrug Dev Team",
+            "name" : "huangyaxiong",
             "email" : "coderhyx@163.com"
         }
     ],

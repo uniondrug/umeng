@@ -1,8 +1,6 @@
 <?php
 namespace Uniondrug\Umeng;
-
-
-use Uniondrug\Umen\Android\AndroidUnicast;
+use Uniondrug\Umeng\Android\AndroidUnicast;
 
 class UmengClient {
 	protected $appkey           = NULL; 

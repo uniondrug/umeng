@@ -1,5 +1,5 @@
 <?php
-namespace Uniondrug\Umen\AndroidNotification;
+namespace Uniondrug\Umeng;
 
 abstract class AndroidNotification extends UmengNotification {
 	// The array for payload, please see API doc for more information

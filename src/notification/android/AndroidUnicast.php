@@ -1,5 +1,5 @@
 <?php
-namespace Uniondrug\Umen\Android;
+namespace Uniondrug\Umeng\Android;
 
 class AndroidUnicast extends AndroidNotification {
 	function __construct() {

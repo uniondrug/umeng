@@ -1,5 +1,5 @@
 <?php
-namespace Uniondrug\Umen\UmengNotification;
+namespace Uniondrug\Umeng;
 
 abstract class UmengNotification {
 	// The host
