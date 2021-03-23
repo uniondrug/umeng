@@ -1,0 +1,15 @@
+{
+    "name" : "uniondrug/umen",
+    "description" : "友盟推送",
+    "authors" : [
+        {
+            "name" : "Uniondrug Dev Team",
+            "email" : "coderhyx@163.com"
+        }
+    ],
+    "autoload" : {
+        "psr-4" : {
+            "Uniondrug\\Umeng\\" : "src/"
+        }
+    }
+}
