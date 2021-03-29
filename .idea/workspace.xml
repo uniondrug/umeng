@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="739f3100-2a6a-4ceb-a743-837831292d96" name="Default Changelist" comment="" />
+    <list default="true" id="739f3100-2a6a-4ceb-a743-837831292d96" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,8 +36,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/UmengClient.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="307">
-              <caret line="378" lean-forward="true" selection-start-line="378" selection-end-line="378" />
+            <state relative-caret-position="196">
+              <caret line="355" column="54" selection-start-line="355" selection-start-column="54" selection-end-line="355" selection-end-column="54" />
               <folding>
                 <element signature="e#33#78#0#PHP" expanded="true" />
               </folding>
@@ -130,18 +132,6 @@
               <item name="umeng" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="umeng" type="b2602c69:ProjectViewProjectNode" />
-              <item name="umeng" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="Android" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="umeng" type="b2602c69:ProjectViewProjectNode" />
-              <item name="umeng" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="Ios" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
@@ -189,15 +179,16 @@
       <updated>1616496731333</updated>
       <workItem from="1616496733297" duration="3613000" />
       <workItem from="1616549402624" duration="4317000" />
-      <workItem from="1616982757528" duration="2851000" />
+      <workItem from="1616982757528" duration="4130000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="10781000" />
+    <option name="totallyTimeSpent" value="12060000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.25679544" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -275,8 +266,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/UmengClient.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="307">
-          <caret line="378" lean-forward="true" selection-start-line="378" selection-end-line="378" />
+        <state relative-caret-position="196">
+          <caret line="355" column="54" selection-start-line="355" selection-start-column="54" selection-end-line="355" selection-end-column="54" />
           <folding>
             <element signature="e#33#78#0#PHP" expanded="true" />
           </folding>
