@@ -1,5 +1,5 @@
 <?php
-namespace Uniondrug\Umeng\Ios_b;
+namespace Uniondrug\Umeng\Ios;
 use Uniondrug\Umeng\IOSNotification;
 
 class IOSGroupcast extends IOSNotification {

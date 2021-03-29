@@ -1,5 +1,5 @@
 <?php
-namespace Uniondrug\Umeng\Android_b;
+namespace Uniondrug\Umeng\Android;
 use Uniondrug\Umeng\AndroidNotification;
 
 class AndroidGroupcast extends AndroidNotification {

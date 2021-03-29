@@ -1,14 +1,21 @@
 <?php
-namespace Uniondrug\Umeng\Android_b;
+namespace Uniondrug\Umeng\Android;
 use Uniondrug\Umeng\AndroidNotification;
+class AndroidCustomizedcast extends AndroidNotification {
 
-class AndroidFilecast extends AndroidNotification {
 	function  __construct() {
 		parent::__construct();
-		$this->data["type"] = "filecast";
-		$this->data["file_id"]  = NULL;
+		$this->data["type"] = "customizedcast";
+		$this->data["alias_type"] = NULL;
 	}
 
+	function isComplete() {
+		parent::isComplete();
+		if (!array_key_exists("alias", $this->data) && !array_key_exists("file_id", $this->data))
+			throw new \Exception("You need to set alias or upload file for customizedcast!");
+	}
+
+	// Upload file with device_tokens or alias to Umeng
 	//return file_id if SUCCESS, else throw Exception with details.
 	function uploadContents($content) {
 		if ($this->data["appkey"] == NULL)
@@ -19,7 +26,7 @@ class AndroidFilecast extends AndroidNotification {
 			throw new \Exception("content should be a string!");
 
 		$post = array("appkey"           => $this->data["appkey"],
-					  "timestamp"        => $this->data["timestamp"], 
+					  "timestamp"        => $this->data["timestamp"],
 					  "content"          => $content
 					  );
 		$url = $this->host . $this->uploadPath;
@@ -36,10 +43,10 @@ class AndroidFilecast extends AndroidNotification {
         $result = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $curlErrNo = curl_errno($ch);
-        $curlErr = curl_error($ch);  
+        $curlErr = curl_error($ch);
         curl_close($ch);
         print($result . "\r\n");
-        if ($httpCode == "0") //time out 
+        if ($httpCode == "0") //time out
         	throw new \Exception("Curl error number:" . $curlErrNo . " , Curl error details:" . $curlErr . "\r\n");
         else if ($httpCode != "200") //we did send the notifition out and got a non-200 response
         	throw new \Exception("http code:" . $httpCode . " details:" . $result . "\r\n");
@@ -55,5 +62,4 @@ class AndroidFilecast extends AndroidNotification {
 			return $this->data["file_id"];
 		return NULL;
 	}
-
 }

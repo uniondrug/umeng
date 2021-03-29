@@ -1,8 +1,8 @@
 <?php
-namespace Uniondrug\Umeng\Android_b;
-use Uniondrug\Umeng\AndroidNotification;
+namespace Uniondrug\Umeng\Ios;
+use Uniondrug\Umeng\IOSNotification;
 
-class AndroidListcast extends AndroidNotification {
+class IOSListcast extends IOSNotification {
 	function __construct() {
 		parent::__construct();
 		$this->data["type"] = "listcast";
