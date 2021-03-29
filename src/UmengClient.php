@@ -1,6 +1,5 @@
 <?php
 namespace Uniondrug\Umeng;
-use mysql_xdevapi\Exception;
 use Uniondrug\Umeng\Android\AndroidBroadcast;
 use Uniondrug\Umeng\Android\AndroidCustomizedcast;
 use Uniondrug\Umeng\Android\AndroidFilecast;
@@ -88,12 +87,12 @@ class UmengClient {
 		}
 	}
 
-	function sendAndroidFilecast() {
+	function sendAndroidFilecast($params) {
 		try {
 			$filecast = new AndroidFilecast();
 			$filecast->setAppMasterSecret($this->appMasterSecret);
             if ($this->miActivity) {
-                $unicast->setPredefinedKeyValue("mi_activity",  $this->miActivity);
+                $filecast->setPredefinedKeyValue("mi_activity",  $this->miActivity);
             }
 			$filecast->setPredefinedKeyValue("appkey",           $this->appkey);
 			$filecast->setPredefinedKeyValue("timestamp",        $this->timestamp);
@@ -105,7 +104,7 @@ class UmengClient {
                 $filecast->setExtraField("linkUrl", $params['linkUrl']);
             }
 			// Upload your device tokens, and use '\n' to split them if there are multiple tokens
-            $deviceTokens = implode('\n', $parmas['deviceTokens']);
+            $deviceTokens = implode('\n', $params['deviceTokens']);
             $filecast->uploadContents($deviceTokens);
 			$data = $filecast->send();
 			var_dump($data);
@@ -152,12 +151,12 @@ class UmengClient {
 		}
 	}
 
-	function sendAndroidCustomizedcast() {
+	function sendAndroidCustomizedcast($params) {
 		try {
 			$customizedcast = new AndroidCustomizedcast();
 			$customizedcast->setAppMasterSecret($this->appMasterSecret);
             if ($this->miActivity) {
-                $unicast->setPredefinedKeyValue("mi_activity",  $this->miActivity);
+                $customizedcast->setPredefinedKeyValue("mi_activity",  $this->miActivity);
             }
 			$customizedcast->setPredefinedKeyValue("appkey",           $this->appkey);
 			$customizedcast->setPredefinedKeyValue("timestamp",        $this->timestamp);
@@ -207,12 +206,12 @@ class UmengClient {
 		}
 	}
 
-	function sendIOSBroadcast($parmas) {
+	function sendIOSBroadcast($params) {
 		try {
 			$brocast = new IOSBroadcast();
 			$brocast->setAppMasterSecret($this->appMasterSecret);
             if ($this->miActivity) {
-                $unicast->setPredefinedKeyValue("mi_activity",  $this->miActivity);
+                $brocast->setPredefinedKeyValue("mi_activity",  $this->miActivity);
             }
 			$brocast->setPredefinedKeyValue("appkey",           $this->appkey);
 			$brocast->setPredefinedKeyValue("timestamp",        $this->timestamp);
@@ -227,8 +226,8 @@ class UmengClient {
             $environment = 'production' == $this->environment ? 'true' : 'false';
 			$brocast->setPredefinedKeyValue("production_mode", $environment);
 			// Set customized fields
-            if ($parmas['linkUrl']){
-                $brocast->setCustomizedField("linkUrl", $parmas['linkUrl']);
+            if ($params['linkUrl']){
+                $brocast->setCustomizedField("linkUrl", $params['linkUrl']);
             }
 			$brocast->send();
 		} catch (\Exception $e) {
@@ -267,12 +266,12 @@ class UmengClient {
 		}
 	}
 
-	function sendIOSFilecast($parmas) {
+	function sendIOSFilecast($params) {
 		try {
 			$filecast = new IOSFilecast();
 			$filecast->setAppMasterSecret($this->appMasterSecret);
             if ($this->miActivity) {
-                $unicast->setPredefinedKeyValue("mi_activity",  $this->miActivity);
+                $filecast->setPredefinedKeyValue("mi_activity",  $this->miActivity);
             }
 			$filecast->setPredefinedKeyValue("appkey",           $this->appkey);
 			$filecast->setPredefinedKeyValue("timestamp",        $this->timestamp);
@@ -291,7 +290,7 @@ class UmengClient {
                 $filecast->setCustomizedField("linkUrl", $params['linkUrl']);
             }
 			// Upload your device tokens, and use '\n' to split them if there are multiple tokens
-            $deviceTokens = implode('\n', $parmas['deviceTokens']);
+            $deviceTokens = implode('\n', $params['deviceTokens']);
 			$filecast->uploadContents($deviceTokens);
 			$filecast->send();
 		} catch (\Exception $e) {
@@ -316,7 +315,7 @@ class UmengClient {
 			$groupcast = new IOSGroupcast();
 			$groupcast->setAppMasterSecret($this->appMasterSecret);
             if ($this->miActivity) {
-                $unicast->setPredefinedKeyValue("mi_activity",    $this->miActivity);
+                $groupcast->setPredefinedKeyValue("mi_activity",    $this->miActivity);
             }
 			$groupcast->setPredefinedKeyValue("appkey",           $this->appkey);
 			$groupcast->setPredefinedKeyValue("timestamp",        $this->timestamp);
@@ -341,12 +340,12 @@ class UmengClient {
 		}
 	}
 
-	function sendIOSCustomizedcast($parmas) {
+	function sendIOSCustomizedcast($params) {
 		try {
 			$customizedcast = new IOSCustomizedcast();
 			$customizedcast->setAppMasterSecret($this->appMasterSecret);
             if ($this->miActivity) {
-                $unicast->setPredefinedKeyValue("mi_activity",  $this->miActivity);
+                $customizedcast->setPredefinedKeyValue("mi_activity",  $this->miActivity);
             }
 			$customizedcast->setPredefinedKeyValue("appkey",           $this->appkey);
 			$customizedcast->setPredefinedKeyValue("timestamp",        $this->timestamp);
@@ -354,9 +353,9 @@ class UmengClient {
 			// Set your alias here, and use comma to split them if there are multiple alias.
 			// And if you have many alias, you can also upload a file containing these alias, then 
 			// use file_id to send customized notification.
-			$customizedcast->setPredefinedKeyValue("alias",           $parmas['alias']);
+			$customizedcast->setPredefinedKeyValue("alias",           $params['alias']);
 			// Set your alias_type here
-			$customizedcast->setPredefinedKeyValue("alias_type",      $parmas['alias_type']);
+			$customizedcast->setPredefinedKeyValue("alias_type",      $params['alias_type']);
 			$customizedcast->setPredefinedKeyValue("alert",           [
                 'title'      => $params['title'],
                 //                'subtitle'   => $params['subtitle'],
