@@ -10,6 +10,10 @@ use Uniondrug\Umeng\Ios\IOSFilecast;
 use Uniondrug\Umeng\Ios\IOSGroupcast;
 use Uniondrug\Umeng\Ios\IOSUnicast;
 
+/**
+ * Class UmengClient
+ * @package Uniondrug\Umeng
+ */
 class UmengClient {
 	protected $appkey           = NULL; 
 	protected $appMasterSecret  = NULL;
@@ -39,7 +43,7 @@ class UmengClient {
 			$brocast->setAppMasterSecret($this->appMasterSecret);
 			$brocast->setPredefinedKeyValue("appkey",           $this->appkey);
 			if ($this->miActivity) {
-                $unicast->setPredefinedKeyValue("mi_activity",  $this->miActivity);
+                $brocast->setPredefinedKeyValue("mi_activity",  $this->miActivity);
             }
             $brocast->setPredefinedKeyValue("timestamp",        $this->timestamp);
 			$brocast->setPredefinedKeyValue("ticker",           SELF::TICKTER);
@@ -179,12 +183,12 @@ class UmengClient {
 		}
 	}
 
-	function sendAndroidCustomizedcastFileId() {
+	function sendAndroidCustomizedcastFileId($params) {
 		try {
 			$customizedcast = new AndroidCustomizedcast();
 			$customizedcast->setAppMasterSecret($this->appMasterSecret);
             if ($this->miActivity) {
-                $unicast->setPredefinedKeyValue("mi_activity",  $this->miActivity);
+                $customizedcast->setPredefinedKeyValue("mi_activity",  $this->miActivity);
             }
 			$customizedcast->setPredefinedKeyValue("appkey",           $this->appkey);
 			$customizedcast->setPredefinedKeyValue("timestamp",        $this->timestamp);
