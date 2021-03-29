@@ -1,7 +1,9 @@
 <?php
 namespace Uniondrug\Umeng\Android;
+use Uniondrug\Umeng\AndroidNotification;
 
 class AndroidUnicast extends AndroidNotification {
+
 	function __construct() {
 		parent::__construct();
 		$this->data["type"] = "unicast";

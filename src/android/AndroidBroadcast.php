@@ -1,5 +1,6 @@
 <?php
-require_once(dirname(__FILE__) . '/../AndroidNotification.php');
+namespace Uniondrug\Umeng\Android;
+use Uniondrug\Umeng\AndroidNotification;
 
 class AndroidBroadcast extends AndroidNotification {
 	function  __construct() {

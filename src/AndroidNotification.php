@@ -60,9 +60,9 @@ abstract class AndroidNotification extends UmengNotification {
 			$this->data["policy"][$key] = $value;
 		} else {
 			if ($key == "payload" || $key == "body" || $key == "policy" || $key == "extra") {
-				throw new Exception("You don't need to set value for ${key} , just set values for the sub keys in it.");
+				throw new \Exception("You don't need to set value for ${key} , just set values for the sub keys in it.");
 			} else {
-				throw new Exception("Unknown key: ${key}");
+				throw new \Exception("Unknown key: ${key}");
 			}
 		}
 	}
@@ -70,7 +70,7 @@ abstract class AndroidNotification extends UmengNotification {
 	// Set extra key/value for Android notification
 	function setExtraField($key, $value) {
 		if (!is_string($key))
-			throw new Exception("key should be a string!");
+			throw new \Exception("key should be a string!");
 		$this->data["payload"]["extra"][$key] = $value;
 	}
 }

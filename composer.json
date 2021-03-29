@@ -1,6 +1,6 @@
 {
     "name" : "uniondrug/umeng",
-    "description" : "友盟推送",
+    "description" : "友盟推送SDK",
     "license" : "MIT",
     "type" : "library",
     "authors" : [

@@ -1,5 +1,6 @@
 <?php
-require_once(dirname(__FILE__) . '/../IOSNotification.php');
+namespace Uniondrug\Umeng\Ios;
+use Uniondrug\Umeng\IOSNotification;
 
 class IOSFilecast extends IOSNotification {
 	function  __construct() {
@@ -11,11 +12,11 @@ class IOSFilecast extends IOSNotification {
 	//return file_id if SUCCESS, else throw Exception with details.
 	function uploadContents($content) {
 		if ($this->data["appkey"] == NULL)
-			throw new Exception("appkey should not be NULL!");
+			throw new \Exception("appkey should not be NULL!");
 		if ($this->data["timestamp"] == NULL)
-			throw new Exception("timestamp should not be NULL!");
+			throw new \Exception("timestamp should not be NULL!");
 		if (!is_string($content))
-			throw new Exception("content should be a string!");
+			throw new \Exception("content should be a string!");
 
 		$post = array("appkey"           => $this->data["appkey"],
 					  "timestamp"        => $this->data["timestamp"], 
@@ -44,7 +45,7 @@ class IOSFilecast extends IOSNotification {
         	throw new Exception("http code:" . $httpCode . " details:" . $result . "\r\n");
         $returnData = json_decode($result, TRUE);
         if ($returnData["ret"] == "FAIL")
-        	throw new Exception("Failed to upload file, details:" . $result . "\r\n");
+        	throw new \Exception("Failed to upload file, details:" . $result . "\r\n");
         else
         	$this->data["file_id"] = $returnData["data"]["file_id"];
 	}

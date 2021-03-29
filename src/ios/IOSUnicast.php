@@ -1,5 +1,6 @@
 <?php
-require_once(dirname(__FILE__) . '/../IOSNotification.php');
+namespace Uniondrug\Umeng\Ios;
+use Uniondrug\Umeng\IOSNotification;
 
 class IOSUnicast extends IOSNotification {
 	function __construct() {

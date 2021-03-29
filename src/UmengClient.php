@@ -1,65 +1,90 @@
 <?php
 namespace Uniondrug\Umeng;
+use mysql_xdevapi\Exception;
+use Uniondrug\Umeng\Android\AndroidBroadcast;
+use Uniondrug\Umeng\Android\AndroidCustomizedcast;
+use Uniondrug\Umeng\Android\AndroidFilecast;
 use Uniondrug\Umeng\Android\AndroidUnicast;
+use Uniondrug\Umeng\Ios\IOSBroadcast;
+use Uniondrug\Umeng\Ios\IOSCustomizedcast;
+use Uniondrug\Umeng\Ios\IOSFilecast;
+use Uniondrug\Umeng\Ios\IOSGroupcast;
+use Uniondrug\Umeng\Ios\IOSUnicast;
 
 class UmengClient {
 	protected $appkey           = NULL; 
-	protected $appMasterSecret     = NULL;
+	protected $appMasterSecret  = NULL;
 	protected $timestamp        = NULL;
 	protected $validation_token = NULL;
+	protected $miActivity       = NULL;
+	protected $environment      = NULL;
+
+	const TICKTER = '药联';
 
 	function __construct($key, $secret) {
-		$this->appkey = $key;
-		$this->appMasterSecret = $secret;
-		$this->timestamp = strval(time());
+		$this->appkey            = $key;
+		$this->appMasterSecret   = $secret;
+		$this->timestamp         = strval(time());
+		if (function_exists('config')){
+            $config = config();
+            $this->miActivity = $config['config']['umeng_mi_activity'];
+        }
+		if (method_exists(\app(), 'environment')){
+            $this->environment = \app()->environment();
+        }
 	}
 
-	function sendAndroidBroadcast() {
+	function sendAndroidBroadcast($params) {
 		try {
 			$brocast = new AndroidBroadcast();
 			$brocast->setAppMasterSecret($this->appMasterSecret);
 			$brocast->setPredefinedKeyValue("appkey",           $this->appkey);
-			$brocast->setPredefinedKeyValue("timestamp",        $this->timestamp);
-			$brocast->setPredefinedKeyValue("ticker",           "Android broadcast ticker");
-			$brocast->setPredefinedKeyValue("title",            "中文的title");
-			$brocast->setPredefinedKeyValue("text",             "Android broadcast text");
+			if ($this->miActivity) {
+                $unicast->setPredefinedKeyValue("mi_activity",  $this->miActivity);
+            }
+            $brocast->setPredefinedKeyValue("timestamp",        $this->timestamp);
+			$brocast->setPredefinedKeyValue("ticker",           SELF::TICKTER);
+			$brocast->setPredefinedKeyValue("title",            $params['title']);
+			$brocast->setPredefinedKeyValue("text",             $params['body']);
 			$brocast->setPredefinedKeyValue("after_open",       "go_app");
 			// Set 'production_mode' to 'false' if it's a test device. 
 			// For how to register a test device, please see the developer doc.
 			$brocast->setPredefinedKeyValue("production_mode", "true");
 			// [optional]Set extra fields
-			$brocast->setExtraField("test", "helloworld");
-			print("Sending broadcast notification, please wait...\r\n");
+            if ($params['linkUrl']){
+                $brocast->setExtraField("linkUrl", $params['linkUrl']);
+            }
 			$brocast->send();
-			print("Sent SUCCESS\r\n");
-		} catch (Exception $e) {
-			print("Caught exception: " . $e->getMessage());
+		} catch (\Exception $e) {
+			return "Caught exception: " . $e->getMessage();
 		}
 	}
 
-	function sendAndroidUnicast() {
+	function sendAndroidUnicast($params) {
 		try {
 			$unicast = new AndroidUnicast();
 			$unicast->setAppMasterSecret($this->appMasterSecret);
 			$unicast->setPredefinedKeyValue("appkey",           $this->appkey);
+            if ($this->miActivity) {
+                $unicast->setPredefinedKeyValue("mi_activity",  $this->miActivity);
+            }
 			$unicast->setPredefinedKeyValue("timestamp",        $this->timestamp);
 			// Set your device tokens here
-			$unicast->setPredefinedKeyValue("device_tokens",    "AjiFkoWu-QwW063wS4wtpmL5l73x9fBZjYNeTJIWHWoK");
-//			$unicast->setPredefinedKeyValue("device_tokens",    "AhmITC7Xt3heCuYLN-KVml9HMmmIrDwkxbX_zHfKppfd");
-			$unicast->setPredefinedKeyValue("ticker",           "Android unicast ticker111");
-			$unicast->setPredefinedKeyValue("title",            "Android unicast title222");
-			$unicast->setPredefinedKeyValue("text",             "Android unicast text333");
-			$unicast->setPredefinedKeyValue("after_open",       "go_app");
-			// Set 'production_mode' to 'false' if it's a test device. 
+			$unicast->setPredefinedKeyValue("device_tokens",    $params['deviceTokens']);
+			$unicast->setPredefinedKeyValue("ticker",           self::TICKTER);
+			$unicast->setPredefinedKeyValue("title",            $params['title']);
+			$unicast->setPredefinedKeyValue("text",             $params['body']);
+			$unicast->setPredefinedKeyValue("after_open",       'go_app');
+			// Set 'production_mode' to 'false' if it's a test device.
 			// For how to register a test device, please see the developer doc.
 			$unicast->setPredefinedKeyValue("production_mode", "true");
 			// Set extra fields
-			$unicast->setExtraField("test", "helloworld");
-			print("Sending unicast notification, please wait...\r\n");
-			$unicast->send();
-			print("Sent SUCCESS\r\n");
-		} catch (Exception $e) {
-			print("Caught exception: " . $e->getMessage());
+            if ($params['linkUrl']){
+                $unicast->setExtraField("linkUrl", $params['linkUrl']);
+            }
+            return $unicast->send();
+		} catch (\Exception $e) {
+			return $e->getMessage();
 		}
 	}
 
@@ -67,24 +92,30 @@ class UmengClient {
 		try {
 			$filecast = new AndroidFilecast();
 			$filecast->setAppMasterSecret($this->appMasterSecret);
+            if ($this->miActivity) {
+                $unicast->setPredefinedKeyValue("mi_activity",  $this->miActivity);
+            }
 			$filecast->setPredefinedKeyValue("appkey",           $this->appkey);
 			$filecast->setPredefinedKeyValue("timestamp",        $this->timestamp);
-			$filecast->setPredefinedKeyValue("ticker",           "Android filecast ticker");
-			$filecast->setPredefinedKeyValue("title",            "Android filecast title");
-			$filecast->setPredefinedKeyValue("text",             "Android filecast text");
-			$filecast->setPredefinedKeyValue("after_open",       "go_app");  //go to app
-			print("Uploading file contents, please wait...\r\n");
+			$filecast->setPredefinedKeyValue("ticker",           self::TICKTER);
+			$filecast->setPredefinedKeyValue("title",            $params['title']);
+			$filecast->setPredefinedKeyValue("text",             $params['body']);
+            $filecast->setPredefinedKeyValue("after_open",       'go_app');
+            if ($params['linkUrl']){
+                $filecast->setExtraField("linkUrl", $params['linkUrl']);
+            }
 			// Upload your device tokens, and use '\n' to split them if there are multiple tokens
-			$filecast->uploadContents("aa"."\n"."bb");
-			print("Sending filecast notification, please wait...\r\n");
-			$filecast->send();
-			print("Sent SUCCESS\r\n");
-		} catch (Exception $e) {
-			print("Caught exception: " . $e->getMessage());
+            $deviceTokens = implode('\n', $parmas['deviceTokens']);
+            $filecast->uploadContents($deviceTokens);
+			$data = $filecast->send();
+			var_dump($data);
+			exit;
+		} catch (\Exception $e) {
+			return "Caught exception: " . $e->getMessage();
 		}
 	}
 
-	function sendAndroidGroupcast() {
+	function sendAndroidGroupcast($params) {
 		try {
 			/* 
 		 	 *  Construct the filter condition:
@@ -97,18 +128,7 @@ class UmengClient {
     	 	 *		]
 		 	 *	}
 		 	 */
-			$filter = 	array(
-							"where" => 	array(
-								    		"and" 	=>  array(
-								    						array(
-							     								"tag" => "test"
-															),
-								     						array(
-							     								"tag" => "Test"
-								     						)
-								     		 			)
-								   		)
-					  	);
+			$filter = 	$params['filter'];
 					  
 			$groupcast = new AndroidGroupcast();
 			$groupcast->setAppMasterSecret($this->appMasterSecret);
@@ -116,18 +136,19 @@ class UmengClient {
 			$groupcast->setPredefinedKeyValue("timestamp",        $this->timestamp);
 			// Set the filter condition
 			$groupcast->setPredefinedKeyValue("filter",           $filter);
-			$groupcast->setPredefinedKeyValue("ticker",           "Android groupcast ticker");
-			$groupcast->setPredefinedKeyValue("title",            "Android groupcast title");
-			$groupcast->setPredefinedKeyValue("text",             "Android groupcast text");
-			$groupcast->setPredefinedKeyValue("after_open",       "go_app");
-			// Set 'production_mode' to 'false' if it's a test device. 
+            $groupcast->setPredefinedKeyValue("ticker",           self::TICKTER);
+            $groupcast->setPredefinedKeyValue("title",            $params['title']);
+            $groupcast->setPredefinedKeyValue("text",             $params['body']);
+            $groupcast->setPredefinedKeyValue("after_open",       'go_app');
+            if ($params['linkUrl']){
+                $groupcast->setExtraField("linkUrl", $params['linkUrl']);
+            }
+			// Set 'production_mode' to 'false' if it's a test device.
 			// For how to register a test device, please see the developer doc.
 			$groupcast->setPredefinedKeyValue("production_mode", "true");
-			print("Sending groupcast notification, please wait...\r\n");
 			$groupcast->send();
-			print("Sent SUCCESS\r\n");
-		} catch (Exception $e) {
-			print("Caught exception: " . $e->getMessage());
+		} catch (\Exception $e) {
+			return "Caught exception: " . $e->getMessage();
 		}
 	}
 
@@ -135,23 +156,27 @@ class UmengClient {
 		try {
 			$customizedcast = new AndroidCustomizedcast();
 			$customizedcast->setAppMasterSecret($this->appMasterSecret);
+            if ($this->miActivity) {
+                $unicast->setPredefinedKeyValue("mi_activity",  $this->miActivity);
+            }
 			$customizedcast->setPredefinedKeyValue("appkey",           $this->appkey);
 			$customizedcast->setPredefinedKeyValue("timestamp",        $this->timestamp);
 			// Set your alias here, and use comma to split them if there are multiple alias.
 			// And if you have many alias, you can also upload a file containing these alias, then 
 			// use file_id to send customized notification.
-			$customizedcast->setPredefinedKeyValue("alias",            "xx");
+			$customizedcast->setPredefinedKeyValue("alias",            $params['alias']);
 			// Set your alias_type here
-			$customizedcast->setPredefinedKeyValue("alias_type",       "xx");
-			$customizedcast->setPredefinedKeyValue("ticker",           "Android customizedcast ticker");
-			$customizedcast->setPredefinedKeyValue("title",            "Android customizedcast title");
-			$customizedcast->setPredefinedKeyValue("text",             "Android customizedcast text");
-			$customizedcast->setPredefinedKeyValue("after_open",       "go_app");
-			print("Sending customizedcast notification, please wait...\r\n");
+			$customizedcast->setPredefinedKeyValue("alias_type",       $params['aliasType']);
+            $customizedcast->setPredefinedKeyValue("ticker",           self::TICKTER);
+            $customizedcast->setPredefinedKeyValue("title",            $params['title']);
+            $customizedcast->setPredefinedKeyValue("text",             $params['body']);
+            $customizedcast->setPredefinedKeyValue("after_open",       'go_app');
+            if ($params['linkUrl']){
+                $customizedcast->setExtraField("linkUrl", $params['linkUrl']);
+            }
 			$customizedcast->send();
-			print("Sent SUCCESS\r\n");
-		} catch (Exception $e) {
-			print("Caught exception: " . $e->getMessage());
+		} catch (\Exception $e) {
+			return "Caught exception: " . $e->getMessage();
 		}
 	}
 
@@ -159,94 +184,122 @@ class UmengClient {
 		try {
 			$customizedcast = new AndroidCustomizedcast();
 			$customizedcast->setAppMasterSecret($this->appMasterSecret);
+            if ($this->miActivity) {
+                $unicast->setPredefinedKeyValue("mi_activity",  $this->miActivity);
+            }
 			$customizedcast->setPredefinedKeyValue("appkey",           $this->appkey);
 			$customizedcast->setPredefinedKeyValue("timestamp",        $this->timestamp);
 			// if you have many alias, you can also upload a file containing these alias, then
 			// use file_id to send customized notification.
-			$customizedcast->uploadContents("aa"."\n"."bb");
+			$customizedcast->uploadContents($params['alias']);
 			// Set your alias_type here
-			$customizedcast->setPredefinedKeyValue("alias_type",       "xx");
-			$customizedcast->setPredefinedKeyValue("ticker",           "Android customizedcast ticker");
-			$customizedcast->setPredefinedKeyValue("title",            "Android customizedcast title");
-			$customizedcast->setPredefinedKeyValue("text",             "Android customizedcast text");
-			$customizedcast->setPredefinedKeyValue("after_open",       "go_app");
-			print("Sending customizedcast notification, please wait...\r\n");
+			$customizedcast->setPredefinedKeyValue("alias_type",       $params['aliasType']);
+            $customizedcast->setPredefinedKeyValue("ticker",           self::TICKTER);
+            $customizedcast->setPredefinedKeyValue("title",            $params['title']);
+            $customizedcast->setPredefinedKeyValue("text",             $params['body']);
+            $customizedcast->setPredefinedKeyValue("after_open",       'go_app');
+            if ($params['linkUrl']){
+                $customizedcast->setExtraField("linkUrl", $params['linkUrl']);
+            }
 			$customizedcast->send();
-			print("Sent SUCCESS\r\n");
-		} catch (Exception $e) {
-			print("Caught exception: " . $e->getMessage());
+		} catch (\Exception $e) {
+			return "Caught exception: " . $e->getMessage();
 		}
 	}
 
-	function sendIOSBroadcast() {
+	function sendIOSBroadcast($parmas) {
 		try {
 			$brocast = new IOSBroadcast();
 			$brocast->setAppMasterSecret($this->appMasterSecret);
+            if ($this->miActivity) {
+                $unicast->setPredefinedKeyValue("mi_activity",  $this->miActivity);
+            }
 			$brocast->setPredefinedKeyValue("appkey",           $this->appkey);
 			$brocast->setPredefinedKeyValue("timestamp",        $this->timestamp);
-
-			$brocast->setPredefinedKeyValue("alert", "IOS 广播测试");
-			$brocast->setPredefinedKeyValue("badge", 0);
-			$brocast->setPredefinedKeyValue("sound", "chime");
+			$brocast->setPredefinedKeyValue("alert",            [
+                'title'      => $params['title'],
+                //                'subtitle'   => $params['subtitle'],
+                'body'       => $params['body'],
+            ]);
+			$brocast->setPredefinedKeyValue("badge",            0);
+			$brocast->setPredefinedKeyValue("sound",            "chime");
 			// Set 'production_mode' to 'true' if your app is under production mode
-			$brocast->setPredefinedKeyValue("production_mode", "false");
+            $environment = 'production' == $this->environment ? 'true' : 'false';
+			$brocast->setPredefinedKeyValue("production_mode", $environment);
 			// Set customized fields
-			$brocast->setCustomizedField("test", "helloworld");
-			print("Sending broadcast notification, please wait...\r\n");
+            if ($parmas['linkUrl']){
+                $brocast->setCustomizedField("linkUrl", $parmas['linkUrl']);
+            }
 			$brocast->send();
-			print("Sent SUCCESS\r\n");
-		} catch (Exception $e) {
-			print("Caught exception: " . $e->getMessage());
+		} catch (\Exception $e) {
+			return "Caught exception: " . $e->getMessage();
 		}
 	}
 
-	function sendIOSUnicast() {
+	function sendIOSUnicast($params) {
 		try {
 			$unicast = new IOSUnicast();
 			$unicast->setAppMasterSecret($this->appMasterSecret);
+            if ($this->miActivity) {
+                $unicast->setPredefinedKeyValue("mi_activity",  $this->miActivity);
+            }
 			$unicast->setPredefinedKeyValue("appkey",           $this->appkey);
 			$unicast->setPredefinedKeyValue("timestamp",        $this->timestamp);
-			// Set your device tokens here
-			$unicast->setPredefinedKeyValue("device_tokens",    "xx"); 
-			$unicast->setPredefinedKeyValue("alert", "IOS 单播测试");
-			$unicast->setPredefinedKeyValue("badge", 0);
+            // Set your device tokens here
+			$unicast->setPredefinedKeyValue("device_tokens",    $params['deviceTokens']);
+			$unicast->setPredefinedKeyValue("alert",            [
+                                                                    'title'      => $params['title'],
+                                                                    'subtitle'   => $params['subTitle'],
+                                                                    'body'       => $params['body'],
+                                                                ]);
+            $unicast->setPredefinedKeyValue("badge", 0);
 			$unicast->setPredefinedKeyValue("sound", "chime");
 			// Set 'production_mode' to 'true' if your app is under production mode
-			$unicast->setPredefinedKeyValue("production_mode", "false");
+            $environment = 'production' == $this->environment ? 'true' : 'false';
+            $unicast->setPredefinedKeyValue("production_mode", $environment);
 			// Set customized fields
-			$unicast->setCustomizedField("test", "helloworld");
-			print("Sending unicast notification, please wait...\r\n");
-			$unicast->send();
-			print("Sent SUCCESS\r\n");
-		} catch (Exception $e) {
-			print("Caught exception: " . $e->getMessage());
+            if ($params['linkUrl']){
+                $unicast->setCustomizedField("linkUrl", $params['linkUrl']);
+            }
+			return $unicast->send();
+		} catch (\Exception $e) {
+			return $e->getMessage();
 		}
 	}
 
-	function sendIOSFilecast() {
+	function sendIOSFilecast($parmas) {
 		try {
 			$filecast = new IOSFilecast();
 			$filecast->setAppMasterSecret($this->appMasterSecret);
+            if ($this->miActivity) {
+                $unicast->setPredefinedKeyValue("mi_activity",  $this->miActivity);
+            }
 			$filecast->setPredefinedKeyValue("appkey",           $this->appkey);
 			$filecast->setPredefinedKeyValue("timestamp",        $this->timestamp);
 
-			$filecast->setPredefinedKeyValue("alert", "IOS 文件播测试");
+			$filecast->setPredefinedKeyValue("alert", [
+                                                            'title'      => $params['title'],
+                                                            //                'subtitle'   => $params['subtitle'],
+                                                            'body'       => $params['body'],
+                                                      ]);
 			$filecast->setPredefinedKeyValue("badge", 0);
 			$filecast->setPredefinedKeyValue("sound", "chime");
 			// Set 'production_mode' to 'true' if your app is under production mode
-			$filecast->setPredefinedKeyValue("production_mode", "false");
-			print("Uploading file contents, please wait...\r\n");
+            $environment = 'production' == $this->environment ? 'true' : 'false';
+            $filecast->setPredefinedKeyValue("production_mode", $environment);
+            if ($params['linkUrl']){
+                $filecast->setCustomizedField("linkUrl", $params['linkUrl']);
+            }
 			// Upload your device tokens, and use '\n' to split them if there are multiple tokens
-			$filecast->uploadContents("aa"."\n"."bb");
-			print("Sending filecast notification, please wait...\r\n");
+            $deviceTokens = implode('\n', $parmas['deviceTokens']);
+			$filecast->uploadContents($deviceTokens);
 			$filecast->send();
-			print("Sent SUCCESS\r\n");
-		} catch (Exception $e) {
-			print("Caught exception: " . $e->getMessage());
+		} catch (\Exception $e) {
+			return "Caught exception: " . $e->getMessage();
 		}
 	}
 
-	function sendIOSGroupcast() {
+	function sendIOSGroupcast($params) {
 		try {
 			/* 
 		 	 *  Construct the filter condition:
@@ -258,75 +311,69 @@ class UmengClient {
     	 	 *		]
 		 	 *	}
 		 	 */
-			$filter = 	array(
-							"where" => 	array(
-								    		"and" 	=>  array(
-								    						array(
-							     								"tag" => "iostest"
-															)
-								     		 			)
-								   		)
-					  	);
+			$filter = 	$params['filter'];
 					  
 			$groupcast = new IOSGroupcast();
 			$groupcast->setAppMasterSecret($this->appMasterSecret);
+            if ($this->miActivity) {
+                $unicast->setPredefinedKeyValue("mi_activity",    $this->miActivity);
+            }
 			$groupcast->setPredefinedKeyValue("appkey",           $this->appkey);
 			$groupcast->setPredefinedKeyValue("timestamp",        $this->timestamp);
 			// Set the filter condition
 			$groupcast->setPredefinedKeyValue("filter",           $filter);
-			$groupcast->setPredefinedKeyValue("alert", "IOS 组播测试");
+			$groupcast->setPredefinedKeyValue("alert",            [
+                'title'      => $params['title'],
+                //                'subtitle'   => $params['subtitle'],
+                'body'       => $params['body'],
+            ]);
 			$groupcast->setPredefinedKeyValue("badge", 0);
 			$groupcast->setPredefinedKeyValue("sound", "chime");
+            if ($params['linkUrl']){
+                $groupcast->setCustomizedField("linkUrl", $params['linkUrl']);
+            }
 			// Set 'production_mode' to 'true' if your app is under production mode
-			$groupcast->setPredefinedKeyValue("production_mode", "false");
-			print("Sending groupcast notification, please wait...\r\n");
+            $environment = 'production' == $this->environment ? 'true' : 'false';
+            $groupcast->setPredefinedKeyValue("production_mode", $environment);
 			$groupcast->send();
-			print("Sent SUCCESS\r\n");
-		} catch (Exception $e) {
-			print("Caught exception: " . $e->getMessage());
+		} catch (\Exception $e) {
+			return "Caught exception: " . $e->getMessage();
 		}
 	}
 
-	function sendIOSCustomizedcast() {
+	function sendIOSCustomizedcast($parmas) {
 		try {
 			$customizedcast = new IOSCustomizedcast();
 			$customizedcast->setAppMasterSecret($this->appMasterSecret);
+            if ($this->miActivity) {
+                $unicast->setPredefinedKeyValue("mi_activity",  $this->miActivity);
+            }
 			$customizedcast->setPredefinedKeyValue("appkey",           $this->appkey);
 			$customizedcast->setPredefinedKeyValue("timestamp",        $this->timestamp);
 
 			// Set your alias here, and use comma to split them if there are multiple alias.
 			// And if you have many alias, you can also upload a file containing these alias, then 
 			// use file_id to send customized notification.
-			$customizedcast->setPredefinedKeyValue("alias", "xx");
+			$customizedcast->setPredefinedKeyValue("alias",           $parmas['alias']);
 			// Set your alias_type here
-			$customizedcast->setPredefinedKeyValue("alias_type", "xx");
-			$customizedcast->setPredefinedKeyValue("alert", "IOS 个性化测试");
-			$customizedcast->setPredefinedKeyValue("badge", 0);
-			$customizedcast->setPredefinedKeyValue("sound", "chime");
+			$customizedcast->setPredefinedKeyValue("alias_type",      $parmas['alias_type']);
+			$customizedcast->setPredefinedKeyValue("alert",           [
+                'title'      => $params['title'],
+                //                'subtitle'   => $params['subtitle'],
+                'body'       => $params['body'],
+            ]);
+			$customizedcast->setPredefinedKeyValue("badge",           0);
+			$customizedcast->setPredefinedKeyValue("sound",           "chime");
 			// Set 'production_mode' to 'true' if your app is under production mode
 			$customizedcast->setPredefinedKeyValue("production_mode", "false");
-			print("Sending customizedcast notification, please wait...\r\n");
+            $environment = 'production' == $this->environment ? 'true' : 'false';
+            if ($params['linkUrl']){
+                $customizedcast->setCustomizedField("linkUrl", $params['linkUrl']);
+            }
+            $customizedcast->setPredefinedKeyValue("production_mode", $environment);
 			$customizedcast->send();
-			print("Sent SUCCESS\r\n");
-		} catch (Exception $e) {
-			print("Caught exception: " . $e->getMessage());
+		} catch (\Exception $e) {
+			return "Caught exception: " . $e->getMessage();
 		}
 	}
 }
-
-// Set your appkey and master secret here
-$demo = new Demo("5f0e7cd7dbc2ec0841e9dbbf", "6b8ojtg8ox8ciedouugelod7bxiddxdh");
-$demo->sendAndroidUnicast();
-/* these methods are all available, just fill in some fields and do the test
- * $demo->sendAndroidBroadcast();
- * $demo->sendAndroidFilecast();
- * $demo->sendAndroidGroupcast();
- * $demo->sendAndroidCustomizedcast();
- * $demo->sendAndroidCustomizedcastFileId();
- *
- * $demo->sendIOSBroadcast();
- * $demo->sendIOSUnicast();
- * $demo->sendIOSFilecast();
- * $demo->sendIOSGroupcast();
- * $demo->sendIOSCustomizedcast();
- */
