@@ -1,14 +1,14 @@
 <?php
 namespace Uniondrug\Umeng;
-use Uniondrug\Umeng\Android\AndroidBroadcast;
-use Uniondrug\Umeng\Android\AndroidCustomizedcast;
-use Uniondrug\Umeng\Android\AndroidFilecast;
-use Uniondrug\Umeng\Android\AndroidUnicast;
-use Uniondrug\Umeng\Ios\IOSBroadcast;
-use Uniondrug\Umeng\Ios\IOSCustomizedcast;
-use Uniondrug\Umeng\Ios\IOSFilecast;
-use Uniondrug\Umeng\Ios\IOSGroupcast;
-use Uniondrug\Umeng\Ios\IOSUnicast;
+use Uniondrug\Umeng\Android_b\AndroidBroadcast;
+use Uniondrug\Umeng\Android_b\AndroidCustomizedcast;
+use Uniondrug\Umeng\Android_b\AndroidFilecast;
+use Uniondrug\Umeng\Android_b\AndroidUnicast;
+use Uniondrug\Umeng\Ios_b\IOSBroadcast;
+use Uniondrug\Umeng\Ios_b\IOSCustomizedcast;
+use Uniondrug\Umeng\Ios_b\IOSFilecast;
+use Uniondrug\Umeng\Ios_b\IOSGroupcast;
+use Uniondrug\Umeng\Ios_b\IOSUnicast;
 
 /**
  * Class UmengClient

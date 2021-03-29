@@ -1,15 +1,22 @@
 <?php
-namespace Uniondrug\Umeng\Ios;
+namespace Uniondrug\Umeng\Ios_b;
 use Uniondrug\Umeng\IOSNotification;
 
-class IOSFilecast extends IOSNotification {
+class IOSCustomizedcast extends IOSNotification {
+
 	function  __construct() {
 		parent::__construct();
-		$this->data["type"] = "filecast";
-		$this->data["file_id"]  = NULL;
+		$this->data["type"] = "customizedcast";
+		$this->data["alias_type"] = NULL;
 	}
 
-	//return file_id if SUCCESS, else throw Exception with details.
+	function isComplete() {
+		parent::isComplete();
+		if (!array_key_exists("alias", $this->data) && !array_key_exists("file_id", $this->data))
+			throw new \Exception("You need to set alias or upload file for customizedcast!");
+	}
+
+	// Upload file with device_tokens or alias to Umeng
 	function uploadContents($content) {
 		if ($this->data["appkey"] == NULL)
 			throw new \Exception("appkey should not be NULL!");
@@ -19,7 +26,7 @@ class IOSFilecast extends IOSNotification {
 			throw new \Exception("content should be a string!");
 
 		$post = array("appkey"           => $this->data["appkey"],
-					  "timestamp"        => $this->data["timestamp"], 
+					  "timestamp"        => $this->data["timestamp"],
 					  "content"          => $content
 					  );
 		$url = $this->host . $this->uploadPath;
@@ -39,10 +46,10 @@ class IOSFilecast extends IOSNotification {
         $curlErr = curl_error($ch);
         curl_close($ch);
         print($result . "\r\n");
-        if ($httpCode == "0") //time out 
-        	throw new Exception("Curl error number:" . $curlErrNo . " , Curl error details:" . $curlErr . "\r\n");
+        if ($httpCode == "0") //time out
+        	throw new \Exception("Curl error number:" . $curlErrNo . " , Curl error details:" . $curlErr . "\r\n");
         else if ($httpCode != "200") //we did send the notifition out and got a non-200 response
-        	throw new Exception("http code:" . $httpCode . " details:" . $result . "\r\n");
+        	throw new \Exception("http code:" . $httpCode . " details:" . $result . "\r\n");
         $returnData = json_decode($result, TRUE);
         if ($returnData["ret"] == "FAIL")
         	throw new \Exception("Failed to upload file, details:" . $result . "\r\n");
@@ -50,10 +57,10 @@ class IOSFilecast extends IOSNotification {
         	$this->data["file_id"] = $returnData["data"]["file_id"];
 	}
 
+
 	function getFileId() {
 		if (array_key_exists("file_id", $this->data))
 			return $this->data["file_id"];
 		return NULL;
 	}
-
 }
