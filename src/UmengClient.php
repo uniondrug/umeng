@@ -252,7 +252,7 @@ class UmengClient {
 			$unicast->setPredefinedKeyValue("device_tokens",    $params['deviceTokens']);
 			$unicast->setPredefinedKeyValue("alert",            [
                                                                     'title'      => $params['title'],
-                                                                    'subtitle'   => $params['subTitle'],
+//                                                                    'subtitle'   => $params['subTitle'],
                                                                     'body'       => $params['body'],
                                                                 ]);
             $unicast->setPredefinedKeyValue("badge", 0);
