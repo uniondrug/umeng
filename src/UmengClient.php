@@ -258,7 +258,8 @@ class UmengClient {
             $unicast->setPredefinedKeyValue("badge", 0);
 			$unicast->setPredefinedKeyValue("sound", "chime");
 			// Set 'production_mode' to 'true' if your app is under production mode
-            $environment = 'production' == $this->environment ? 'true' : 'false';
+//            $environment = 'production' == $this->environment ? 'true' : 'false';
+            $environment = 'true';
             $unicast->setPredefinedKeyValue("production_mode", $environment);
 			// Set customized fields
             if ($params['linkUrl']){
