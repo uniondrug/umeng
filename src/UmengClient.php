@@ -57,7 +57,7 @@ class UmengClient {
             if ($params['linkUrl']){
                 $brocast->setExtraField("linkUrl", $params['linkUrl']);
             }
-			$brocast->send();
+			return $brocast->send();
 		} catch (\Exception $e) {
 			return "Caught exception: " . $e->getMessage();
 		}
@@ -73,7 +73,13 @@ class UmengClient {
             }
 			$unicast->setPredefinedKeyValue("timestamp",        $this->timestamp);
 			// Set your device tokens here
-			$unicast->setPredefinedKeyValue("device_tokens",    $params['deviceTokens']);
+            if (is_array($params['deviceTokens'])  && count($params['deviceTokens']) < 500){
+                $unicast->setPredefinedKeyValue("type",          'listcast');
+                $unicast->setPredefinedKeyValue("device_tokens", implode(',', $params['deviceTokens']));
+            }else{
+                $unicast->setPredefinedKeyValue("type",          'unicast');
+                $unicast->setPredefinedKeyValue("device_tokens", $params['deviceTokens']);
+            }
 			$unicast->setPredefinedKeyValue("ticker",           self::TICKTER);
 			$unicast->setPredefinedKeyValue("title",            $params['title']);
 			$unicast->setPredefinedKeyValue("text",             $params['body']);
@@ -93,12 +99,12 @@ class UmengClient {
 
 	function sendAndroidFilecast($params) {
 		try {
-			$filecast = new AndroidFilecast();
+            $filecast = new AndroidFilecast();
 			$filecast->setAppMasterSecret($this->appMasterSecret);
             if ($this->miActivity) {
                 $filecast->setPredefinedKeyValue("mi_activity",  $this->miActivity);
             }
-			$filecast->setPredefinedKeyValue("appkey",           $this->appkey);
+            $filecast->setPredefinedKeyValue("appkey",           $this->appkey);
 			$filecast->setPredefinedKeyValue("timestamp",        $this->timestamp);
 			$filecast->setPredefinedKeyValue("ticker",           self::TICKTER);
 			$filecast->setPredefinedKeyValue("title",            $params['title']);
@@ -107,12 +113,9 @@ class UmengClient {
             if ($params['linkUrl']){
                 $filecast->setExtraField("linkUrl", $params['linkUrl']);
             }
-			// Upload your device tokens, and use '\n' to split them if there are multiple tokens
-            $deviceTokens = implode('\n', $params['deviceTokens']);
+            $deviceTokens = trim(implode("\n", $params['deviceTokens']));
             $filecast->uploadContents($deviceTokens);
-			$data = $filecast->send();
-			var_dump($data);
-			exit;
+			return $filecast->send();
 		} catch (\Exception $e) {
 			return "Caught exception: " . $e->getMessage();
 		}
@@ -227,7 +230,7 @@ class UmengClient {
 			$brocast->setPredefinedKeyValue("badge",            0);
 			$brocast->setPredefinedKeyValue("sound",            "chime");
 			// Set 'production_mode' to 'true' if your app is under production mode
-            $environment = 'production' == $this->environment ? 'true' : 'false';
+            $environment = in_array($this->environment, ['release', 'production']) ? 'true' : 'false';
 			$brocast->setPredefinedKeyValue("production_mode", $environment);
 			// Set customized fields
             if ($params['linkUrl']){
@@ -242,15 +245,21 @@ class UmengClient {
 	function sendIOSUnicast($params) {
 		try {
 			$unicast = new IOSUnicast();
-			$unicast->setAppMasterSecret($this->appMasterSecret);
+            $unicast->setAppMasterSecret($this->appMasterSecret);
             if ($this->miActivity) {
                 $unicast->setPredefinedKeyValue("mi_activity",  $this->miActivity);
             }
-			$unicast->setPredefinedKeyValue("appkey",           $this->appkey);
+            $unicast->setPredefinedKeyValue("appkey",           $this->appkey);
 			$unicast->setPredefinedKeyValue("timestamp",        $this->timestamp);
             // Set your device tokens here
-			$unicast->setPredefinedKeyValue("device_tokens",    $params['deviceTokens']);
-			$unicast->setPredefinedKeyValue("alert",            [
+            if (is_array($params['deviceTokens'])){
+                $unicast->setPredefinedKeyValue("type", 'listcast');
+                $unicast->setPredefinedKeyValue("device_tokens", implode(',', $params['deviceTokens']));
+            }else{
+                $unicast->setPredefinedKeyValue("type", 'unicast');
+                $unicast->setPredefinedKeyValue("device_tokens", $params['deviceTokens']);
+            }
+            $unicast->setPredefinedKeyValue("alert",            [
                                                                     'title'      => $params['title'],
 //                                                                    'subtitle'   => $params['subTitle'],
                                                                     'body'       => $params['body'],
@@ -258,10 +267,10 @@ class UmengClient {
             $unicast->setPredefinedKeyValue("badge", 0);
 			$unicast->setPredefinedKeyValue("sound", "chime");
 			// Set 'production_mode' to 'true' if your app is under production mode
-//            $environment = 'production' == $this->environment ? 'true' : 'false';
-            $environment = 'true';
+            $environment = in_array($this->environment, ['release', 'production']) ? 'true' : 'false';
             $unicast->setPredefinedKeyValue("production_mode", $environment);
 			// Set customized fields
+
             if ($params['linkUrl']){
                 $unicast->setCustomizedField("linkUrl", $params['linkUrl']);
             }
@@ -275,9 +284,6 @@ class UmengClient {
 		try {
 			$filecast = new IOSFilecast();
 			$filecast->setAppMasterSecret($this->appMasterSecret);
-            if ($this->miActivity) {
-                $filecast->setPredefinedKeyValue("mi_activity",  $this->miActivity);
-            }
 			$filecast->setPredefinedKeyValue("appkey",           $this->appkey);
 			$filecast->setPredefinedKeyValue("timestamp",        $this->timestamp);
 
@@ -289,15 +295,16 @@ class UmengClient {
 			$filecast->setPredefinedKeyValue("badge", 0);
 			$filecast->setPredefinedKeyValue("sound", "chime");
 			// Set 'production_mode' to 'true' if your app is under production mode
-            $environment = 'production' == $this->environment ? 'true' : 'false';
+            $environment = in_array($this->environment, ['release', 'production']) ? 'true' : 'false';
             $filecast->setPredefinedKeyValue("production_mode", $environment);
             if ($params['linkUrl']){
                 $filecast->setCustomizedField("linkUrl", $params['linkUrl']);
             }
 			// Upload your device tokens, and use '\n' to split them if there are multiple tokens
-            $deviceTokens = implode('\n', $params['deviceTokens']);
-			$filecast->uploadContents($deviceTokens);
-			$filecast->send();
+            $deviceTokens = implode("\n", $params['deviceTokens']);
+//            echo $deviceTokens.PHP_EOL;
+            $filecast->uploadContents($deviceTokens);
+			return $filecast->send();
 		} catch (\Exception $e) {
 			return "Caught exception: " . $e->getMessage();
 		}
@@ -337,7 +344,7 @@ class UmengClient {
                 $groupcast->setCustomizedField("linkUrl", $params['linkUrl']);
             }
 			// Set 'production_mode' to 'true' if your app is under production mode
-            $environment = 'production' == $this->environment ? 'true' : 'false';
+            $environment = in_array($this->environment, ['release', 'production']) ? 'true' : 'false';
             $groupcast->setPredefinedKeyValue("production_mode", $environment);
 			$groupcast->send();
 		} catch (\Exception $e) {
@@ -370,7 +377,7 @@ class UmengClient {
 			$customizedcast->setPredefinedKeyValue("sound",           "chime");
 			// Set 'production_mode' to 'true' if your app is under production mode
 			$customizedcast->setPredefinedKeyValue("production_mode", "false");
-            $environment = 'production' == $this->environment ? 'true' : 'false';
+            $environment = in_array($this->environment, ['release', 'production']) ? 'true' : 'false';
             if ($params['linkUrl']){
                 $customizedcast->setCustomizedField("linkUrl", $params['linkUrl']);
             }

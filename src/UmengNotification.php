@@ -50,15 +50,15 @@ abstract class UmengNotification {
 	function isComplete() {
 		if (is_null($this->appMasterSecret))
 			throw new \Exception("Please set your app master secret for generating the signature!");
-		$this->checkArrayValues($this->data);
+        $this->checkArrayValues($this->data);
 		return TRUE;
 	}
 
 	private function checkArrayValues($arr) {
 		foreach ($arr as $key => $value) {
-			if (is_null($value))
-				throw new \Exception($key . " is NULL!");
-			else if (is_array($value)) {
+			if (is_null($value)){
+                throw new \Exception($key . " is NULL!");
+            }else if (is_array($value)) {
 				$this->checkArrayValues($value);
 			}
 		}
@@ -69,13 +69,15 @@ abstract class UmengNotification {
 
 	//send the notification to umeng, return response data if SUCCESS , otherwise throw \\Exception() with details.
 	function send() {
-		//check the fields to make sure that they are not NULL
+        //check the fields to make sure that they are not NULL
     	$this->isComplete();
         $url = $this->host . $this->postPath;
         $postBody = json_encode($this->data);
+//        echo '【场景】:api 以filecast方式发送两个设备'.PHP_EOL;
         $sign = md5("POST" . $url . $postBody . $this->appMasterSecret);
         $url = $url . "?sign=" . $sign;
-  		$ch = curl_init($url);
+
+        $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);
         curl_setopt($ch, CURLOPT_POST, 1);

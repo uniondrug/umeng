@@ -24,8 +24,11 @@ class AndroidFilecast extends AndroidNotification {
 					  );
 		$url = $this->host . $this->uploadPath;
 		$postBody = json_encode($post);
+//		echo '>>>>>>>>>>>>>'.$postBody.PHP_EOL;
 		$sign = md5("POST" . $url . $postBody . $this->appMasterSecret);
 		$url = $url . "?sign=" . $sign;
+//		echo $url.PHP_EOL;
+//		echo $postBody.PHP_EOL;
 		$ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);
@@ -38,7 +41,9 @@ class AndroidFilecast extends AndroidNotification {
         $curlErrNo = curl_errno($ch);
         $curlErr = curl_error($ch);  
         curl_close($ch);
-        print($result . "\r\n");
+//        echo '>>>up';
+//        print($result);
+//        echo '<<<';
         if ($httpCode == "0") //time out 
         	throw new \Exception("Curl error number:" . $curlErrNo . " , Curl error details:" . $curlErr . "\r\n");
         else if ($httpCode != "200") //we did send the notifition out and got a non-200 response
