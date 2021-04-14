@@ -52,7 +52,8 @@ class UmengClient {
             $brocast->setPredefinedKeyValue("after_open",       "go_app");
             // Set 'production_mode' to 'false' if it's a test device.
             // For how to register a test device, please see the developer doc.
-            $environment = in_array($this->environment, ['release', 'production']) ? 'true' : 'false';
+            //只允许生产群发
+            $environment = $this->environment == 'production' ? 'true' : 'false';
             $brocast->setPredefinedKeyValue("production_mode", $environment);			// Set extra fields
             // [optional]Set extra fields
             if ($params['linkUrl']){
@@ -87,7 +88,8 @@ class UmengClient {
             $unicast->setPredefinedKeyValue("after_open",       'go_app');
             // Set 'production_mode' to 'false' if it's a test device.
             // For how to register a test device, please see the developer doc.
-            $environment = in_array($this->environment, ['release', 'production']) ? 'true' : 'false';
+            //只允许生产群发
+            $environment = $this->environment == 'production' ? 'true' : 'false';
             $unicast->setPredefinedKeyValue("production_mode", $environment);			// Set extra fields
             if ($params['linkUrl']){
                 $unicast->setExtraField("linkUrl", $params['linkUrl']);
@@ -116,7 +118,7 @@ class UmengClient {
             }
             $deviceTokens = trim(implode("\n", $params['deviceTokens']));
             $environment = in_array($this->environment, ['release', 'production']) ? 'true' : 'false';
-            $groupcast->setPredefinedKeyValue("production_mode", $environment);
+            $filecast->setPredefinedKeyValue("production_mode", $environment);
             $filecast->uploadContents($deviceTokens);
             return $filecast->send();
         } catch (\Exception $e) {
